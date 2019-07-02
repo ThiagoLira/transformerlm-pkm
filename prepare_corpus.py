@@ -1,5 +1,4 @@
 import os
-from preppy import PokePreppy 
 import re
 
 # ##### #
@@ -104,15 +103,32 @@ def restore_windows_1252_characters(s):
             # No character at the corresponding code point: remove it.
             return ''
     return re.sub(r'[\u0080-\u0099]', to_windows_1252, s)
+# Some preprocesssing that will be common to all the text classification methods you will see. 
 
+puncts = [',', '.', '"', ':', ')', '(', '-', '!', '?', '|', ';', "'", '$', '&', '/', '[', ']', '>', '%', '=', '#', '*', '+', '\\', '•',  '~', '@', '£', 
+ '·', '_', '{', '}', '©', '^', '®', '`',  '<', '→', '°', '€', '™', '›',  '♥', '←', '×', '§', '″', '′', 'Â', '█', '½', 'à', '…', 
+ '“', '★', '”', '–', '●', 'â', '►', '−', '¢', '²', '¬', '░', '¶', '↑', '±', '¿', '▾', '═', '¦', '║', '―', '¥', '▓', '—', '‹', '─', 
+ '▒', '：', '¼', '⊕', '▼', '▪', '†', '■', '’', '▀', '¨', '▄', '♫', '☆', 'é', '¯', '♦', '¤', '▲', 'è', '¸', '¾', 'Ã', '⋅', '‘', '∞', 
+ '∙', '）', '↓', '、', '│', '（', '»', '，', '♪', '╩', '╚', '³', '・', '╦', '╣', '╔', '╗', '▬', '❤', 'ï', 'Ø', '¹', '≤', '‡', '√', ]
 
-corpus = []
-#for filename in os.listdir('pokeCorpus'):
-for filename in os.listdir('pokeCorpusBulba'):
-    with open('pokeCorpusBulba/' + filename, "r",encoding='utf-8') as text_file:
-        corpus.append(clean_text(replace_chars_(text_file.read())))
+def remove_puncts(s):
+    for punct in puncts:
+        if punct in x:
+            x = x.replace(punct, f' <punct> ')
+    return x 
 
+corpus = ""
+val_corpus = ""
+for filename in os.listdir('data/pokeCorpusBulba'):
+    with open('data/pokeCorpusBulba/' + filename, "r",encoding='utf-8') as text_file:
+        clean_string = ' <begin> ' + clean_text(replace_chars_(text_file.read()))+ ' <end> '
+        # one random episode is validation data
+        if (filename == 'DP003.txt'):
+            val_corpus+= clean_string
+        else:
+            corpus+= clean_string
 
-
-import pickle
-pickle.dump(corpus,open('poke_raw_data.pkl','wb'))
+with open('data/pokeCorpusBulba/' + 'val.txt', 'w') as text_file:
+        text_file.write(val_corpus)
+with open('data/pokeCorpusBulba/' + 'train.txt', 'w') as text_file:
+        text_file.write(corpus)
