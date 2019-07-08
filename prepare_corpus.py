@@ -90,20 +90,6 @@ def replace_chars_ (text):
         return chars[char]
     return re.sub('(' + '|'.join(chars.keys()) + ')', replace_chars, text)
 
-def restore_windows_1252_characters(s):
-    """Replace C1 control characters in the Unicode string s by the
-    characters at the corresponding code points in Windows-1252,
-    where possible.
-    """
-    import re
-    def to_windows_1252(match):
-        try:
-            return bytes([ord(match.group(0))]).decode('windows-1252')
-        except UnicodeDecodeError:
-            # No character at the corresponding code point: remove it.
-            return ''
-    return re.sub(r'[\u0080-\u0099]', to_windows_1252, s)
-# Some preprocesssing that will be common to all the text classification methods you will see. 
 
 puncts = [',', '.', '"', ':', ')', '(', '-', '!', '?', '|', ';', "'", '$', '&', '/', '[', ']', '>', '%', '=', '#', '*', '+', '\\', '•',  '~', '@', '£', 
  '·', '_', '{', '}', '©', '^', '®', '`',  '<', '→', '°', '€', '™', '›',  '♥', '←', '×', '§', '″', '′', 'Â', '█', '½', 'à', '…', 
@@ -113,20 +99,24 @@ puncts = [',', '.', '"', ':', ')', '(', '-', '!', '?', '|', ';', "'", '$', '&', 
 
 def remove_puncts(s):
     for punct in puncts:
-        if punct in x:
-            x = x.replace(punct, f' <punct> ')
-    return x 
+        if (punct in s):
+            s = s.replace(punct, ' <punct> ')
+    return s 
 
 corpus = ""
 val_corpus = ""
 for filename in os.listdir('data/pokeCorpusBulba'):
-    with open('data/pokeCorpusBulba/' + filename, "r",encoding='utf-8') as text_file:
-        clean_string = ' <begin> ' + clean_text(replace_chars_(text_file.read()))+ ' <end> '
-        # one random episode is validation data
-        if (filename == 'DP003.txt'):
-            val_corpus+= clean_string
-        else:
-            corpus+= clean_string
+    if (filename in [ ".DS_Store", "train.txt", "val.txt"]):
+        pass
+    else:
+        with open('data/pokeCorpusBulba/' + filename, "r",encoding='utf-8') as text_file:
+
+            clean_string = ' <begin> ' + (clean_text(replace_chars_(text_file.read())))+ ' <end> '
+            # one random episode is validation data
+            if (filename == 'DP003.txt'):
+                val_corpus+= clean_string
+            else:
+                corpus+= clean_string
 
 with open('data/pokeCorpusBulba/' + 'val.txt', 'w') as text_file:
         text_file.write(val_corpus)

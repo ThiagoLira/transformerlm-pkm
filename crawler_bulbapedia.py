@@ -2,6 +2,11 @@ import requests,re
 from bs4 import BeautifulSoup
 import os.path
 
+
+# skip these, as the crawler messes up it's text
+problematic_episodes_list = ['AG120','XY124','DP048','DP120']
+
+
 def prepareEpisode (link):
     html = requests.get(link).text
 
@@ -11,7 +16,6 @@ def prepareEpisode (link):
 
     soup = BeautifulSoup(html, "lxml")
 
-    
     texto_que_importa = soup.find_all('h2')[2]
 
 
@@ -30,7 +34,8 @@ def prepareEpisode (link):
     file_name = episode_name + '.txt'
 
     with open('pokeCorpusBulba/' + file_name, 'w') as text_file:
-        text_file.write(s)
+        if (episode_name not in problematic_episodes_list):
+            text_file.write(s)
 
 
 episode_links = []
