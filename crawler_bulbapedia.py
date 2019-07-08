@@ -33,7 +33,7 @@ def prepareEpisode (link):
 
     file_name = episode_name + '.txt'
 
-    with open('pokeCorpusBulba/' + file_name, 'w') as text_file:
+    with open('data/pokeCorpusBulba/' + file_name, 'w') as text_file:
         if (episode_name not in problematic_episodes_list):
             text_file.write(s)
 
@@ -51,8 +51,8 @@ for suffix,final_epi in [("EP",274),("AG",192),("DP",191),("XY",140),("SM",74)]:
         episode_links.append(main_link + suffix + ep_number)
 
 
-if not os.path.exists('pokeCorpusBulba'):
-    os.makedirs('pokeCorpusBulba')
+if not os.path.exists('data/pokeCorpusBulba'):
+    os.makedirs('data/pokeCorpusBulba')
 
 #print (episode_links)
 for link in episode_links:
